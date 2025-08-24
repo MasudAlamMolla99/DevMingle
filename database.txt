@@ -1,0 +1,6 @@
+Masud#12
+
+mongodb+srv://<db_username>:<db_password>@devtinder.vourwb6.mongodb.net/
+
+
+mongodb+srv://masudalammolla99:<db_password>@devtinder.vourwb6.mongodb.net/
