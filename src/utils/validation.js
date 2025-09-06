@@ -20,4 +20,36 @@ const validateSignupData = (req) => {
   }
 };
 
-module.exports = validateSignupData;
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "emailId",
+    "photoUrl",
+    "gender",
+    "about",
+    "skills",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
+  return isEditAllowed;
+};
+
+const validatePasswordStrength = (req) => {
+  const password = req.body.password;
+
+  if (!validator.isStrongPassword(password)) {
+    throw new Error(
+      "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+    );
+  } else {
+    return true;
+  }
+};
+
+module.exports = {
+  validateSignupData,
+  validateEditProfileData,
+  validatePasswordStrength,
+};
