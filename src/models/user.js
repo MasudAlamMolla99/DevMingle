@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
     },
     about: {
       type: String,
-      default: "Add about yourself",
+
       validate(value) {
         if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
           throw new Error("About section must not contain special characters");

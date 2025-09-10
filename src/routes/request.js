@@ -2,7 +2,6 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const connectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
-const connectionRequest = require("../models/connectionRequest");
 const requestRouter = express.Router();
 
 requestRouter.post(
@@ -46,7 +45,7 @@ requestRouter.post(
       });
 
       const data = await connectionReq.save();
-      res.json({ message: req.firstName + "is" + status, data });
+      res.json({ message: req.user.firstName + "is" + status, data });
     } catch (err) {
       res.send("ERROR:" + err.message);
     }
@@ -59,21 +58,21 @@ requestRouter.post(
     try {
       const loggedInUser = req.user;
       const allowedStatus = ["accepted", "rejected"];
-      const { status, requestId } = req.body;
+      const { status, requestId } = req.params;
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: "Status not allowed" });
       }
 
-      const connectionRequest = await connectionRequest.findOne({
+      const connectionRequests = await connectionRequest.findOne({
         _id: requestId,
         toUserId: loggedInUser._id,
         status: "interested",
       });
-      if (!connectionRequest) {
+      if (!connectionRequests) {
         res.status(400).json({ message: "No connection found" });
       }
-      connectionRequest.status = status;
-      const data = await connectionRequest.save();
+      connectionRequests.status = status;
+      const data = await connectionRequests.save();
       res.json({ message: "Connection request" + status, data });
     } catch (err) {
       res.send("ERROR:" + err.message);
