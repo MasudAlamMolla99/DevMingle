@@ -45,7 +45,16 @@ requestRouter.post(
       });
 
       const data = await connectionReq.save();
-      res.json({ message: req.user.firstName + "is" + status, data });
+      let message = "";
+      if (status === "interested") {
+        message = `${req.user.firstName} is interested in your profile`;
+      } else if (status === "ignored") {
+        message = `${req.user.firstName} has ignored your profile`;
+      }
+      return res.json({
+        message,
+        status,
+      });
     } catch (err) {
       res.send("ERROR:" + err.message);
     }

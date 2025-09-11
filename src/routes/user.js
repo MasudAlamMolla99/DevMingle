@@ -1,7 +1,10 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const connectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 const userRouter = express.Router();
+
+const USER_SAFE_DATA = "firstName lastName emailId age gender skills about";
 
 userRouter.get("/user/review/received", userAuth, async (req, res) => {
   try {
@@ -11,7 +14,7 @@ userRouter.get("/user/review/received", userAuth, async (req, res) => {
         toUserId: loggedInUser._id,
         status: "interested",
       })
-      .populate("fromUserId", ["firstName", "lastName"]);
+      .populate("fromUserId", USER_SAFE_DATA);
 
     res.json({
       message: "Data fetched successfully",
@@ -34,7 +37,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", ["firstName", "lastName"])
       .populate("toUserId", ["firstName", "lastName"]);
     const data = connectionReqs.map((row) => {
-      if (row.fromUserId.toString() === loggedInUser._id.toString()) {
+      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return row.toUserId;
       }
       return row.fromUserId;
@@ -43,6 +46,27 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   } catch (err) {
     res.send("ERROR:" + err.message);
   }
+});
+
+userRouter.get("/user/feed", userAuth, async (req, res) => {
+  const loggedInUser = req.user;
+  const connectionReq = await connectionRequest
+    .find({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    })
+    .select("fromUserId toUserId");
+
+  const shouldHideFromUserFeed = new Set();
+  connectionReq.forEach((req) => {
+    shouldHideFromUserFeed.add(req.fromUserId);
+    shouldHideFromUserFeed.add(req.toUserId);
+  });
+
+  const user = await User.find({
+    _id: { $nin: Array.from(shouldHideFromUserFeed) },
+  }).select(USER_SAFE_DATA);
+
+  res.send(user);
 });
 
 module.exports = userRouter;
