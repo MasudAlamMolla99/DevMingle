@@ -28,9 +28,12 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
     console.log(loggedInUser);
     await loggedInUser.save();
-    res.send(`${loggedInUser.firstName}, your profile updated`);
+    res.status(200).json({
+      message: "Profile updated successfully",
+      data: loggedInUser,
+    });
   } catch (err) {
-    res.send("ERROR:" + err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 profileRouter.patch("/profile/forget-password", userAuth, async (req, res) => {
