@@ -47,13 +47,15 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
+        if (!["Male", "Female", "Others"].includes(value)) {
           throw new Error("Gender is not valid");
         }
       },
     },
     photoUrl: {
       type: String,
+      default:
+        "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("Invalid email");
@@ -62,6 +64,7 @@ const userSchema = new mongoose.Schema(
     },
     about: {
       type: String,
+      default: "Write something",
 
       validate(value) {
         if (!/^[a-zA-Z0-9\s]+$/.test(value)) {
