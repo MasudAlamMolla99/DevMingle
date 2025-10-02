@@ -24,16 +24,19 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       throw new Error("Invalid Edit Request");
     }
     const loggedInUser = req.user;
-    console.log(loggedInUser);
+
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
-    console.log(loggedInUser);
+
     await loggedInUser.save();
     res.status(200).json({
       message: "Profile updated successfully",
       data: loggedInUser,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err.name === "ValidationError") {
+      const errors = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({ error: errors[0] }); // only send first error (e.g. "Gender is not valid")
+    }
   }
 });
 profileRouter.patch("/profile/forget-password", userAuth, async (req, res) => {
