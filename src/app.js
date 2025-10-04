@@ -18,6 +18,8 @@ const userRouter = require("./routes/user");
 const initializeSocket = require("./utils/socket");
 const chatRouter = require("./routes/chat");
 
+const PORT = 3000 || process.env.PORT;
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -40,7 +42,7 @@ initializeSocket(server);
 connectDb()
   .then(() => {
     console.log("Database connect");
-    server.listen(3000, () => {
+    server.listen(PORT, () => {
       console.log("Server Connected");
     });
   })
