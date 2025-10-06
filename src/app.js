@@ -22,7 +22,7 @@ const PORT = 3000 || process.env.PORT;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://dev-mingle-web.vercel.app",
     credentials: true,
   })
 );
